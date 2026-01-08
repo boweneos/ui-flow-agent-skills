@@ -1,0 +1,94 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "UI Step Output",
+  "description": "Structured output for a single UI interaction step",
+  "type": "object",
+  "required": ["step_id", "intent", "action", "ui_element", "precondition", "resulting_state"],
+  "properties": {
+    "step_id": {
+      "type": "string",
+      "description": "Unique identifier for this step (e.g., 'step-1', 'step-2')",
+      "pattern": "^step-[0-9]+$"
+    },
+    "intent": {
+      "type": "string",
+      "description": "What the user is trying to accomplish with this action"
+    },
+    "action": {
+      "type": "string",
+      "enum": ["click", "type", "select", "scroll", "hover", "drag", "double-click", "right-click", "focus", "blur"],
+      "description": "The type of user interaction"
+    },
+    "input_value": {
+      "type": "string",
+      "description": "For 'type' actions, the text being entered"
+    },
+    "ui_element": {
+      "type": "object",
+      "required": ["type", "label", "visual_location", "identification_strategy"],
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["button", "input", "link", "menu", "dropdown", "checkbox", "radio", "tab", "modal", "dialog", "form", "table", "list", "icon", "image", "text"],
+          "description": "The semantic type of the UI element"
+        },
+        "label": {
+          "type": "string",
+          "description": "Visible text, aria-label, or descriptive identifier"
+        },
+        "visual_location": {
+          "type": "string",
+          "description": "Human-readable position description (e.g., 'top-right of header')"
+        },
+        "identification_strategy": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Ordered list of strategies to locate this element, from most to least preferred"
+        },
+        "parent_context": {
+          "type": "string",
+          "description": "Parent container or context for disambiguation"
+        }
+      }
+    },
+    "precondition": {
+      "type": "string",
+      "description": "Required application state before this action can be performed"
+    },
+    "resulting_state": {
+      "type": "string",
+      "description": "Expected application state after this action completes"
+    },
+    "wait_for": {
+      "type": "object",
+      "properties": {
+        "before_action": {
+          "type": "string",
+          "description": "Element or condition to wait for before performing action"
+        },
+        "after_action": {
+          "type": "string",
+          "description": "Element or condition to wait for after action completes"
+        }
+      }
+    },
+    "annotation_mapping": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      },
+      "description": "Mapping of visual annotations to their meanings"
+    },
+    "confidence": {
+      "type": "string",
+      "enum": ["high", "medium", "low"],
+      "description": "Confidence level in the analysis (based on annotation clarity)"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Additional observations or caveats"
+    }
+  }
+}

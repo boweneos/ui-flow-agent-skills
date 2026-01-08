@@ -1,0 +1,141 @@
+name: Create Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'  # Triggers on version tags like v1.0.0, v1.2.3, etc.
+  workflow_dispatch:  # Allows manual trigger from GitHub UI
+    inputs:
+      version:
+        description: 'Release version (e.g., v1.0.0)'
+        required: true
+        default: 'v1.0.0'
+
+jobs:
+  create-release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Fetch all history for changelog generation
+      
+      - name: Set version variable
+        id: version
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "VERSION=${{ github.event.inputs.version }}" >> $GITHUB_OUTPUT
+          else
+            echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Create skill packages
+        run: |
+          mkdir -p release-artifacts
+          
+          # Package each skill individually
+          for skill_dir in skills/*/; do
+            if [ -f "${skill_dir}SKILL.md" ]; then
+              skill_name=$(basename "$skill_dir")
+              echo "Packaging skill: $skill_name"
+              
+              # Create a zip file for the skill
+              cd skills
+              zip -r "../release-artifacts/${skill_name}.zip" "$skill_name" \
+                -x "*.git*" -x "*__pycache__*" -x "*.pyc" -x ".DS_Store"
+              cd ..
+              
+              # Create a tar.gz file as alternative
+              tar -czf "release-artifacts/${skill_name}.tar.gz" \
+                -C skills "$skill_name" \
+                --exclude="*.git*" \
+                --exclude="*__pycache__*" \
+                --exclude="*.pyc" \
+                --exclude=".DS_Store"
+            fi
+          done
+          
+          # Create a complete bundle with all skills
+          echo "Creating complete skills bundle..."
+          zip -r "release-artifacts/all-skills.zip" skills \
+            -x "*.git*" -x "*__pycache__*" -x "*.pyc" -x ".DS_Store"
+          
+          tar -czf "release-artifacts/all-skills.tar.gz" skills \
+            --exclude="*.git*" \
+            --exclude="*__pycache__*" \
+            --exclude="*.pyc" \
+            --exclude=".DS_Store"
+          
+          # List created artifacts
+          echo "Created artifacts:"
+          ls -lh release-artifacts/
+      
+      - name: Generate changelog
+        id: changelog
+        run: |
+          # Get the previous tag
+          PREV_TAG=$(git describe --tags --abbrev=0 HEAD^ 2>/dev/null || echo "")
+          
+          if [ -z "$PREV_TAG" ]; then
+            echo "First release - no previous tag found"
+            CHANGELOG="## 🎉 Initial Release
+
+This is the first release of UI Flow Agent Skills.
+
+### 📦 Included Skills
+
+- **multimodal-ui-flow-analyzer** - Analyze annotated UI screenshots and markdown documentation to generate agent-consumable UI flow specifications
+
+### 📥 Download Options
+
+- Download individual skills as \`.zip\` or \`.tar.gz\` files
+- Download the complete bundle with all skills
+
+### 🚀 Quick Start
+
+1. Download the skill package you need
+2. Extract to your agent's skills directory
+3. Start using the skill with your AI agent
+
+See the [README](https://github.com/${{ github.repository }}) for detailed usage instructions."
+          else
+            echo "Generating changelog from $PREV_TAG to HEAD"
+            CHANGELOG="## 📝 Changes
+
+$(git log $PREV_TAG..HEAD --pretty=format:'- %s (%h)' --no-merges)
+
+### 📦 Included Skills
+
+- **multimodal-ui-flow-analyzer** - Analyze annotated UI screenshots and markdown documentation to generate agent-consumable UI flow specifications"
+          fi
+          
+          # Save changelog to file and output
+          echo "$CHANGELOG" > release-notes.md
+          echo "CHANGELOG<<EOF" >> $GITHUB_OUTPUT
+          echo "$CHANGELOG" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+      
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ steps.version.outputs.VERSION }}
+          name: Release ${{ steps.version.outputs.VERSION }}
+          body_path: release-notes.md
+          draft: false
+          prerelease: false
+          files: |
+            release-artifacts/*.zip
+            release-artifacts/*.tar.gz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Upload artifacts for verification
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-packages-${{ steps.version.outputs.VERSION }}
+          path: release-artifacts/
+          retention-days: 30

@@ -1,21 +1,19 @@
-# UI Flow Agent Skills
+# Multimodal UI Flow Analyzer - Agent Skill
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Agent Skills](https://img.shields.io/badge/Agent%20Skills-Compatible-blue)](https://agentskills.io)
 
-> Professional Agent Skills for analyzing UI flows from annotated screenshots and markdown documentation, generating automation-ready specifications for AI agents.
+> Analyze annotated UI screenshots and markdown documentation to generate agent-consumable UI flow specifications for AI agents.
 
 ## 🎯 Overview
 
-This repository contains production-ready [Agent Skills](https://agentskills.io) that extend AI agent capabilities with specialized knowledge for UI flow analysis and automation. Built on the open Agent Skills format, these skills work across multiple agent platforms including Cursor, Claude, and custom AI systems.
+This is a production-ready [Agent Skill](https://agentskills.io) that extends AI agent capabilities with specialized knowledge for UI flow analysis and automation. Built on the open Agent Skills format, this skill works across multiple agent platforms including Cursor, Claude, and custom AI systems.
 
 ### What are Agent Skills?
 
 Agent Skills are a lightweight, open format for extending AI agent capabilities with specialized knowledge and workflows. They're portable, version-controlled packages that give agents access to procedural knowledge and context they need to perform complex tasks reliably.
 
-## 📦 Available Skills
-
-### [Multimodal UI Flow Analyzer](./multimodal-ui-flow-analyzer/)
+## ✨ Capabilities
 
 Analyze annotated UI screenshots and markdown documentation to generate agent-consumable UI flow specifications.
 
@@ -32,7 +30,7 @@ Analyze annotated UI screenshots and markdown documentation to generate agent-co
 - Semantic selector recommendations
 - Precondition and postcondition tracking
 
-[**📖 View Full Documentation →**](./multimodal-ui-flow-analyzer/README.md)
+[**📖 View Detailed Skill Documentation →**](./skill-README.md)
 
 ## 🚀 Quick Start
 
@@ -65,7 +63,10 @@ Download specific skills directly from the [releases page](https://github.com/bo
 
 #### In Cursor IDE
 
-Install via GitHub URL in Cursor Settings → Rules → Add Rule → Remote Rule (Github), or clone and symlink to `~/.cursor/skills/`:
+1. Open **Cursor Settings** (Cmd+Shift+J)
+2. Navigate to **Rules** → **Add Rule** → **Remote Rule (Github)**
+3. Enter: `https://github.com/boweneos/ui-flow-agent-skills`
+4. The skill will be available as `@multimodal-ui-flow-analyzer`
 
 ```
 @multimodal-ui-flow-analyzer analyze the login flow in docs/login-flow.md
@@ -80,7 +81,7 @@ Add to your system prompt:
   <skill>
     <name>multimodal-ui-flow-analyzer</name>
     <description>Analyze annotated UI screenshots and markdown to generate agent-consumable UI flow specifications.</description>
-    <location>/path/to/multimodal-ui-flow-analyzer/SKILL.md</location>
+    <location>/path/to/ui-flow-agent-skills/SKILL.md</location>
   </skill>
 </available_skills>
 ```
@@ -92,7 +93,7 @@ Load skills programmatically:
 ```python
 from pathlib import Path
 
-skill_path = Path("multimodal-ui-flow-analyzer/SKILL.md")
+skill_path = Path("ui-flow-agent-skills/SKILL.md")
 skill_content = skill_path.read_text()
 
 # Inject into agent context when needed
@@ -109,21 +110,21 @@ agent.add_context(skill_content)
 
 ```
 ui-flow-agent-skills/
+├── SKILL.md                         # Skill instructions + metadata (REQUIRED at root)
 ├── README.md                        # This file
+├── skill-README.md                  # Detailed skill documentation
 ├── LICENSE                          # MIT License
-├── .gitignore                       # Git ignore rules
-└── multimodal-ui-flow-analyzer/     # Skill folder (at root for clean GitHub import)
-    ├── SKILL.md                     # Skill instructions + metadata
-    ├── README.md                    # Skill documentation
-    ├── assets/                      # Templates and resources
-    │   ├── PROMPTS.md
-    │   └── templates/
-    │       ├── step-output.json
-    │       ├── flow-output.md
-    │       └── automation-hints.md
-    └── references/                  # Reference materials
-        └── original-guide.md
+├── assets/                          # Templates and resources
+│   ├── PROMPTS.md
+│   └── templates/
+│       ├── step-output.json
+│       ├── flow-output.md
+│       └── automation-hints.md
+└── references/                      # Reference materials
+    └── original-guide.md
 ```
+
+**Note:** SKILL.md must be at the repository root for Cursor's GitHub import to discover it correctly.
 
 ## 🛠️ Creating Your Own Skills
 

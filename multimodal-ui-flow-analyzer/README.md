@@ -182,7 +182,7 @@ used to verify the same flows work correctly on our mobile app.
 
 ### Cursor IDE
 
-The skill is automatically available when the `skills/` folder is in your workspace.
+Install via GitHub URL in Cursor Settings → Rules → Add Rule → Remote Rule (Github).
 Reference it directly:
 
 ```
@@ -199,7 +199,7 @@ Add to your system prompt:
     <name>multimodal-ui-flow-analyzer</name>
     <description>Analyze annotated UI screenshots and markdown to generate 
     agent-consumable UI flow specifications.</description>
-    <location>/path/to/skills/multimodal-ui-flow-analyzer/SKILL.md</location>
+    <location>/path/to/multimodal-ui-flow-analyzer/SKILL.md</location>
   </skill>
 </available_skills>
 ```
@@ -211,7 +211,7 @@ Load the skill programmatically:
 ```python
 from pathlib import Path
 
-skill_path = Path("skills/multimodal-ui-flow-analyzer/SKILL.md")
+skill_path = Path("multimodal-ui-flow-analyzer/SKILL.md")
 skill_content = skill_path.read_text()
 
 # Inject into agent context when UI analysis is needed

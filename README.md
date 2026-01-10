@@ -15,7 +15,7 @@ Agent Skills are a lightweight, open format for extending AI agent capabilities 
 
 ## 📦 Available Skills
 
-### [Multimodal UI Flow Analyzer](./skills/multimodal-ui-flow-analyzer/)
+### [Multimodal UI Flow Analyzer](./multimodal-ui-flow-analyzer/)
 
 Analyze annotated UI screenshots and markdown documentation to generate agent-consumable UI flow specifications.
 
@@ -32,7 +32,7 @@ Analyze annotated UI screenshots and markdown documentation to generate agent-co
 - Semantic selector recommendations
 - Precondition and postcondition tracking
 
-[**📖 View Full Documentation →**](./skills/multimodal-ui-flow-analyzer/README.md)
+[**📖 View Full Documentation →**](./multimodal-ui-flow-analyzer/README.md)
 
 ## 🚀 Quick Start
 
@@ -65,7 +65,7 @@ Download specific skills directly from the [releases page](https://github.com/bo
 
 #### In Cursor IDE
 
-Skills are automatically discovered when the `skills/` folder is in your workspace:
+Install via GitHub URL in Cursor Settings → Rules → Add Rule → Remote Rule (Github), or clone and symlink to `~/.cursor/skills/`:
 
 ```
 @multimodal-ui-flow-analyzer analyze the login flow in docs/login-flow.md
@@ -80,7 +80,7 @@ Add to your system prompt:
   <skill>
     <name>multimodal-ui-flow-analyzer</name>
     <description>Analyze annotated UI screenshots and markdown to generate agent-consumable UI flow specifications.</description>
-    <location>/path/to/skills/multimodal-ui-flow-analyzer/SKILL.md</location>
+    <location>/path/to/multimodal-ui-flow-analyzer/SKILL.md</location>
   </skill>
 </available_skills>
 ```
@@ -92,7 +92,7 @@ Load skills programmatically:
 ```python
 from pathlib import Path
 
-skill_path = Path("skills/multimodal-ui-flow-analyzer/SKILL.md")
+skill_path = Path("multimodal-ui-flow-analyzer/SKILL.md")
 skill_content = skill_path.read_text()
 
 # Inject into agent context when needed
@@ -109,21 +109,20 @@ agent.add_context(skill_content)
 
 ```
 ui-flow-agent-skills/
-├── README.md                    # This file
-├── LICENSE                      # MIT License
-├── .gitignore                   # Git ignore rules
-└── skills/                      # Skills directory
-    └── multimodal-ui-flow-analyzer/
-        ├── SKILL.md             # Skill instructions + metadata
-        ├── README.md            # Skill documentation
-        ├── assets/              # Templates and resources
-        │   ├── PROMPTS.md
-        │   └── templates/
-        │       ├── step-output.json
-        │       ├── flow-output.md
-        │       └── automation-hints.md
-        └── references/          # Reference materials
-            └── original-guide.md
+├── README.md                        # This file
+├── LICENSE                          # MIT License
+├── .gitignore                       # Git ignore rules
+└── multimodal-ui-flow-analyzer/     # Skill folder (at root for clean GitHub import)
+    ├── SKILL.md                     # Skill instructions + metadata
+    ├── README.md                    # Skill documentation
+    ├── assets/                      # Templates and resources
+    │   ├── PROMPTS.md
+    │   └── templates/
+    │       ├── step-output.json
+    │       ├── flow-output.md
+    │       └── automation-hints.md
+    └── references/                  # Reference materials
+        └── original-guide.md
 ```
 
 ## 🛠️ Creating Your Own Skills
@@ -157,7 +156,7 @@ Write detailed instructions for the AI agent here...
 
 ```bash
 pip install skills-ref
-skills-ref validate skills/your-skill-name
+skills-ref validate your-skill-name
 ```
 
 ## 🤝 Contributing
@@ -182,7 +181,7 @@ git checkout -b feature/your-feature-name
 # Make your changes and test them
 
 # Validate your changes
-skills-ref validate skills/your-skill-name
+skills-ref validate your-skill-name
 
 # Commit and push
 git add .
@@ -201,10 +200,10 @@ All skills in this repository are validated against the Agent Skills specificati
 pip install skills-ref
 
 # Validate all skills
-skills-ref validate skills/
+skills-ref validate .
 
 # Validate specific skill
-skills-ref validate skills/multimodal-ui-flow-analyzer
+skills-ref validate multimodal-ui-flow-analyzer
 ```
 
 ## 🔗 Related Projects
